@@ -1,0 +1,53 @@
+# Zig build output
+**/zig-out/
+**/zig-cache/
+**/.zig-cache/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.wasm
+
+# Generated files
+*.pdb
+*.ilk
+*.exp
+*.lib
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Language server cache
+zls.json
+.zls/
+
+# Test coverage
+*.profdata
+*.profraw
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS specific
+Thumbs.db
+desktop.ini
+
+# Documentation builds
+docs/html/
+docs/latex/
+
+# Local configuration
+.env
+.env.local
+config.local.zig

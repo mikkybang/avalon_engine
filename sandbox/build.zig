@@ -28,7 +28,7 @@ pub fn build(b: *std.Build) void {
     // to our consumers. We must give it a name because a Zig package can expose
     // multiple modules and consumers will need to be able to specify which
     // module they want to access.
-    const mod = b.addModule("avalon_engine", .{
+    const mod = b.addModule("sandbox", .{
         // The root source file is the "entry point" of this module. Users of
         // this module will only be able to access public declarations contained
         // in this file, which means that if you have declarations that you
@@ -39,6 +39,12 @@ pub fn build(b: *std.Build) void {
         // Later on we'll use this module as the root module of a test executable
         // which requires us to specify a target.
         .target = target,
+    });
+
+    // Here I want to define a libary that can import the game engine code
+    // Create the avalon game engine module from parent directory
+    const avalon_engine = b.addModule("avalon_engine", .{
+        .root_source_file = b.path("../avalon/src/main.zig"), // Adjust path to your engine's root
     });
 
     // Here we define an executable. An executable needs to have a root module
@@ -58,7 +64,7 @@ pub fn build(b: *std.Build) void {
     // If neither case applies to you, feel free to delete the declaration you
     // don't need and to put everything under a single module.
     const exe = b.addExecutable(.{
-        .name = "avalon_engine",
+        .name = "sandbox",
         .root_module = b.createModule(.{
             // b.createModule defines a new module just like b.addModule but,
             // unlike b.addModule, it does not expose the module to consumers of
@@ -73,12 +79,13 @@ pub fn build(b: *std.Build) void {
             // List of modules available for import in source files part of the
             // root module.
             .imports = &.{
-                // Here "avalon_engine" is the name you will use in your source code to
-                // import this module (e.g. `@import("avalon_engine")`). The name is
+                // Here "sandbox" is the name you will use in your source code to
+                // import this module (e.g. `@import("sandbox")`). The name is
                 // repeated because you are allowed to rename your imports, which
                 // can be extremely useful in case of collisions (which can happen
                 // importing modules from different packages).
-                .{ .name = "avalon_engine", .module = mod },
+                .{ .name = "sandbox", .module = mod },
+                .{ .name = "avalon_engine", .module = avalon_engine },
             },
         }),
     });

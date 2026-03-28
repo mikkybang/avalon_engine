@@ -1,10 +1,12 @@
 const std = @import("std");
-const avalon_engine = @import("avalon_engine");
+const sandbox = @import("sandbox");
+const avalon = @import("avalon_engine");
 
 pub fn main() !void {
     // Prints to stderr, ignoring potential errors.
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-    try avalon_engine.bufferedPrint();
+    try avalon.init();
+    try sandbox.bufferedPrint();
 }
 
 test "simple test" {
