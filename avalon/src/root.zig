@@ -1,5 +1,6 @@
 //! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
+const application = @import("avalon/application.zig");
 
 pub fn bufferedPrint() !void {
     // Stdout is for the actual output of your application, for example if you
@@ -12,6 +13,11 @@ pub fn bufferedPrint() !void {
     try stdout.print("Run `zig build test` to run the tests.\n", .{});
 
     try stdout.flush(); // Don't forget to flush!
+}
+
+pub fn createApplication() !application.Application {
+    const app = try application.create();
+    return app;
 }
 
 pub fn add(a: i32, b: i32) i32 {

@@ -5,6 +5,8 @@ pub fn main() !void {
     // Prints to stderr, ignoring potential errors.
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
     try avalon_engine.bufferedPrint();
+    const app = try avalon_engine.createApplication();
+    std.debug.print("Application created: x={} y={}\n", .{ app.x, app.y });
 }
 
 pub fn init() !void {

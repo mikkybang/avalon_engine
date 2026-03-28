@@ -44,7 +44,7 @@ pub fn build(b: *std.Build) void {
     // Here I want to define a libary that can import the game engine code
     // Create the avalon game engine module from parent directory
     const avalon_engine = b.addModule("avalon_engine", .{
-        .root_source_file = b.path("../avalon/src/main.zig"), // Adjust path to your engine's root
+        .root_source_file = b.path("../avalon/src/root.zig"), // Adjust path to your engine's root
     });
 
     // Here we define an executable. An executable needs to have a root module
