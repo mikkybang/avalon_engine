@@ -43,9 +43,7 @@ pub fn build(b: *std.Build) void {
 
     // Here I want to define a libary that can import the game engine code
     // Create the avalon game engine module from parent directory
-    const avalon_engine = b.addModule("avalon_engine", .{
-        .root_source_file = b.path("../avalon/src/root.zig"), // Adjust path to your engine's root
-    });
+    const avalon_engine = b.dependency("avalon_engine", .{ .target = target, .optimize = optimize });
 
     // Here we define an executable. An executable needs to have a root module
     // which needs to expose a `main` function. While we could add a main function
@@ -85,7 +83,7 @@ pub fn build(b: *std.Build) void {
                 // can be extremely useful in case of collisions (which can happen
                 // importing modules from different packages).
                 .{ .name = "sandbox", .module = mod },
-                .{ .name = "avalon_engine", .module = avalon_engine },
+                .{ .name = "avalon_engine", .module = avalon_engine.module("avalon_engine") },
             },
         }),
     });
