@@ -1,6 +1,7 @@
 const std = @import("std");
 const mouse = @import("../core/mouse.zig");
 const logger = @import("../logger.zig");
+const event_manager = @import("./event_manager.zig");
 
 pub const EventType = enum(u32) { None, WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved, AppTick, AppUpdate, AppRender, KeyPressed, KeyReleased, KeyTyped, MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled };
 
@@ -33,14 +34,16 @@ pub const Event = struct {
     categories: EventCategorySet,
     handled: bool = false,
     data: EventData = EventData{ .none = undefined },
-    fn getName(self: Event) []const u8 {
+    pub fn getName(self: Event) []const u8 {
         return @tagName(self.type);
     }
-    fn isInCategory(self: Event, category: EventCategory) bool {
+    pub fn isInCategory(self: Event, category: EventCategory) bool {
         return self.categories.contains(category);
     }
     pub fn emit(self: *Event) !void {
         const game_logger = try logger.getLogger();
+        const game_event_manager = try event_manager.getEventManager();
+        try game_event_manager.addEvent(self);
         try game_logger.infof("Event {s} emitted", .{self.getName()}, @src());
         if (!self.handled) self.handled = true;
     }
