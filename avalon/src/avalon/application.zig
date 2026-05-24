@@ -2,6 +2,13 @@ const std = @import("std");
 const core = @import("./core/core.zig");
 const logger = @import("logger.zig");
 const event = @import("event/event.zig");
+const event_manager = @import("event/event_manager.zig");
+
+fn listenThread(game_event_manager: *event_manager.EventManager) void {
+    game_event_manager.startListening() catch |err| {
+        std.log.err("Event listener failed: {}", .{err});
+    };
+}
 
 pub const Application = struct {
     // This struct represents your application and can be used to store any state or resources that your application needs.
@@ -10,8 +17,13 @@ pub const Application = struct {
     fn run(app: *Application) !void {
         std.debug.print("Running avalon.. x={} y={}\n", .{ app.x, app.y });
         try core.run();
+        const game_logger = try logger.getLogger();
+        const game_event_manager = try event_manager.init();
+
+        const thread = try std.Thread.spawn(.{}, listenThread, .{game_event_manager});
+        defer thread.join();
+
         while (true) {
-            const game_logger = try logger.getLogger();
             const event_category = [2]event.EventCategory{ event.EventCategory.Application, event.EventCategory.Input };
             var game_event: event.Event = .{ .type = event.EventType.AppRender, .categories = event.EventCategorySet.initMany(&event_category) };
             try game_event.emit();
