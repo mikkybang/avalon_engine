@@ -24,7 +24,7 @@ pub const EventBuffer = struct {
         self.read_index = (read_index + 1) & self.mask;
         return true;
     }
-    pub fn isEmpty(self: *EventBuffer) !bool {
+    pub fn isEmpty(self: *EventBuffer) bool {
         return self.read_index == self.write_index;
     }
 };
