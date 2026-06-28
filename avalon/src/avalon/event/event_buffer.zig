@@ -27,6 +27,11 @@ pub const EventBuffer = struct {
     pub fn isEmpty(self: *EventBuffer) bool {
         return self.read_index == self.write_index;
     }
+
+    pub fn deinit(self: *EventBuffer, allocator: std.mem.Allocator) void {
+        std.debug.print("Deinitializing EventBuffer\n", .{});
+        allocator.free(self.events);
+    }
 };
 
 pub fn init(allocator: std.mem.Allocator, size: usize) !EventBuffer {

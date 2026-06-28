@@ -14,16 +14,25 @@ pub const Application = struct {
     // This struct represents your application and can be used to store any state or resources that your application needs.
     x: i32,
     y: i32,
-    fn run(app: *Application) !void {
-        std.debug.print("Running avalon.. x={} y={}\n", .{ app.x, app.y });
+    running: bool = true,
+
+    pub fn stop(self: *Application) void {
+        self.running = false;
+    }
+
+    pub fn run(self: *Application, init: std.process.Init) !void {
+        std.debug.print("Running avalon.. x={} y={}\n", .{ self.x, self.y });
         try core.run();
         const game_logger = try logger.getLogger();
-        const game_event_manager = try event_manager.init();
+        const game_event_manager = try event_manager.init(init.io);
 
         const thread = try std.Thread.spawn(.{}, listenThread, .{game_event_manager});
-        defer thread.join();
+        defer {
+            game_event_manager.stop() catch {};
+            thread.join();
+        }
 
-        while (true) {
+        while (self.running) {
             const event_category = [2]event.EventCategory{ event.EventCategory.Application, event.EventCategory.Input };
             var game_event: event.Event = .{ .type = event.EventType.AppRender, .categories = event.EventCategorySet.initMany(&event_category) };
             try game_event.emit();
@@ -32,16 +41,17 @@ pub const Application = struct {
     }
 };
 
-pub fn create() !Application {
+pub fn create(init: std.process.Init) !Application {
     // This function is called by the client to create an instance of your application.
     // You can use it to set up any global state or resources that your application needs.
     std.debug.print("Creating avalon application...", .{});
     var app = Application{
         .x = 0,
         .y = 0,
+        .running = true,
     };
-    const app_logger = try logger.init();
+    const app_logger = try logger.init(init.io, init.gpa);
     try app_logger.warn("Logger init done", @src());
-    try app.run();
+    try app.run(init);
     return app;
 }

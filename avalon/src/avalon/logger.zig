@@ -1,19 +1,21 @@
 const logly = @import("logly");
 const std = @import("std");
 
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 var logger: ?*logly.Logger = null;
-var logger_mutex = std.Thread.Mutex{};
+var logger_mutex = std.Io.Mutex.init;
 
-pub fn init() !*logly.Logger {
-    logger_mutex.lock();
-    defer logger_mutex.unlock();
+const LoggerError = error{
+    LoggerNotInitialized,
+};
+
+pub fn init(io: std.Io, allocator: std.mem.Allocator) !*logly.Logger {
+    try logger_mutex.lock(io);
+    defer logger_mutex.unlock(io);
 
     // Return existing logger if already initialized
     if (logger) |existing| {
         return existing;
     }
-    const allocator = gpa.allocator();
 
     // Enable ANSI colors on Windows
     _ = logly.Terminal.enableAnsiColors();
@@ -30,16 +32,12 @@ pub fn getLogger() !*logly.Logger {
     if (logger) |l| {
         return l;
     }
-    return init();
+    return error.LoggerNotInitialized;
 }
 
 pub fn deinit() void {
-    logger_mutex.lock();
-    defer logger_mutex.unlock();
-
     if (logger) |l| {
         l.deinit();
         logger = null;
     }
-    _ = gpa.deinit();
 }
