@@ -1,19 +1,20 @@
 const std = @import("std");
 const avalon_engine = @import("avalon_engine");
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Prints to stderr, ignoring potential errors.
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-    try avalon_engine.bufferedPrint();
-    const app = try avalon_engine.createApplication();
+    const io = init.io;
+    try avalon_engine.bufferedPrint(io);
+    const app = try avalon_engine.createApplication(init);
     std.debug.print("Application created: x={} y={}\n", .{ app.x, app.y });
 }
 
-pub fn init() !void {
-    // This function is called before main and can be used to set up global state.
-    // If you don't need it, feel free to delete it.
-    std.debug.print("Initializing avalon...", .{});
-}
+// pub fn init() !void {
+//     // This function is called before main and can be used to set up global state.
+//     // If you don't need it, feel free to delete it.
+//     std.debug.print("Initializing avalon...", .{});
+// }
 
 test "simple test" {
     const gpa = std.testing.allocator;

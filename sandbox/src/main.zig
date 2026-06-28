@@ -2,12 +2,12 @@ const std = @import("std");
 const sandbox = @import("sandbox");
 const avalon = @import("avalon_engine");
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Prints to stderr, ignoring potential errors.
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-    const app = try avalon.createApplication();
+    const app = try avalon.createApplication(init);
     std.debug.print("Application created: x={} y={}\n", .{ app.x, app.y });
-    try sandbox.bufferedPrint();
+    try sandbox.bufferedPrint(init.io);
 }
 
 test "simple test" {
