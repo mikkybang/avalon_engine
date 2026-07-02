@@ -36,6 +36,10 @@
             .url = "git+https://github.com/muhammad-fiaz/logly.zig.git#64cee861ba80d395e719fd61ee4316a3a62ccce0",
             .hash = "logly-0.2.0-kZjLe_DBGABRBwl7LQgg3KZyD8p3vw-BC3vKuw6NmrBB",
         },
+        .glfw_zig = .{
+            .url = "git+https://github.com/tiawl/glfw.zig?ref=stable#560890c772f9168d1ee78678c55fe9dbeb1cdd41",
+            .hash = "glfw_zig-1.0.0-NrvYo4nRGQCZby7yNo_dBtsmGzVEhMsV4-Fw29gWQq6L",
+        },
     },
     .paths = .{
         "build.zig",

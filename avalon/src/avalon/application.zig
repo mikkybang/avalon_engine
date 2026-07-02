@@ -3,6 +3,9 @@ const core = @import("./core/core.zig");
 const logger = @import("logger.zig");
 const event = @import("event/event.zig");
 const event_manager = @import("event/event_manager.zig");
+const glfw = @cImport({
+    @cInclude("GLFW/glfw3.h");
+});
 
 fn listenThread(game_event_manager: *event_manager.EventManager) void {
     game_event_manager.startListening() catch |err| {
@@ -30,9 +33,18 @@ pub const Application = struct {
         defer {
             game_event_manager.stop() catch {};
             thread.join();
+            glfw.glfwTerminate();
+            game_logger.deinit();
         }
+        _ = glfw.glfwInit();
+        const window = glfw.glfwCreateWindow(800, 600, "Avalon", null, null);
+        glfw.glfwMakeContextCurrent(window);
 
-        while (self.running) {
+        defer glfw.glfwDestroyWindow(window);
+
+        while (glfw.glfwWindowShouldClose(window) == 0) {
+            glfw.glfwSwapBuffers(window);
+            glfw.glfwPollEvents();
             const event_category = [2]event.EventCategory{ event.EventCategory.Application, event.EventCategory.Input };
             var game_event: event.Event = .{ .type = event.EventType.AppRender, .categories = event.EventCategorySet.initMany(&event_category) };
             try game_event.emit();

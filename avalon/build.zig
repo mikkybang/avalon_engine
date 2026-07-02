@@ -33,6 +33,13 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+
+    const glfw_dep = b.dependency("glfw_zig", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const glfw_lib = glfw_dep.artifact("glfw");
     const mod = b.addModule("avalon_engine", .{
         // The root source file is the "entry point" of this module. Users of
         // this module will only be able to access public declarations contained
@@ -46,6 +53,9 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .imports = &.{.{ .name = "logly", .module = logly_dep.module("logly") }},
     });
+
+    mod.linkLibrary(glfw_lib);
+    mod.addIncludePath(glfw_dep.path("glfw/include"));
 
     // Here we define an executable. An executable needs to have a root module
     // which needs to expose a `main` function. While we could add a main function
@@ -88,6 +98,9 @@ pub fn build(b: *std.Build) void {
             },
         }),
     });
+
+    exe.root_module.linkLibrary(glfw_lib);
+    exe.root_module.addIncludePath(glfw_dep.path("glfw/include"));
 
     // This declares intent for the executable to be installed into the
     // install prefix when running `zig build` (i.e. when executing the default
